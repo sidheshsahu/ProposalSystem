@@ -60,7 +60,7 @@ def get_rag_chain():
     {context}
 
     Task:
-    - Analyze how well this proposal aligns with each department’s interests and biases but dont display in answers
+    - Analyze how well this proposal aligns with each department’s interests and biases but don't display in answers
     - Compute an overall acceptance chance (average of all four).
     - Finally, provide 4 overall recommendations to improve overall approval rate.
     -Display  overall acceptance chance (average of all four) and provide 4 overall recommendations to improve overall approval rate.
