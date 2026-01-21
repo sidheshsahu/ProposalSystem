@@ -52,6 +52,12 @@ Task:
 - Decide whether to VOTE "YES" or "NO"
 - Give a short explanation (2–4 lines)
 
+
+IMPORTANT OUTPUT RULES:
+- No markdown formatting
+- No **bold**, *, bullet points, or numbered lists
+- Use plain text sentences only
+
 Output format:
 Department: Computer Science
 Vote: [YES or NO]
