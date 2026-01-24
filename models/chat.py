@@ -14,6 +14,9 @@ from haystack.components.embedders import SentenceTransformersTextEmbedder,Sente
 
 load_dotenv()
 
+# Initialize Pinecone Document Store
+
+
 document_store = PineconeDocumentStore(
   index="biaspredictor",
   metric="cosine",
