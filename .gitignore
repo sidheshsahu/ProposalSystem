@@ -1,2 +1,3 @@
-models/rag_system
-models/.env
+sahu
+.env
+models/__pycache__
