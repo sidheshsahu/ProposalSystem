@@ -64,53 +64,14 @@ retriever =PineconeEmbeddingRetriever(document_store=document_store)
 # print("Retrieved docs:", len(docs))
 
 template = """
-    You are an academic evaluation assistant analyzing a course proposal.
-    The proposal will be reviewed by four departments, each having specific biases.
-
-    Department Biases:
-    1. Computer Science (CSE) Biases:
-       - Prefers strong technical foundations, coding assignments, and advanced software integration.
-       - Dislikes vague theoretical proposals with minimal implementation details.
-
-    2. Information Technology (IT) Biases:
-       - Values practical labs, industry tools, and real-world project exposure.
-       - Dislikes proposals without clear student applicability or technology deployment roadmap.
-
-    3. Artificial Intelligence & Data Science (AI–DS) Biases:
-       - Favors courses with machine learning, data-driven applications, or modern AI integration.
-       - Dislikes courses lacking innovation or measurable analytical components.
-
-    4. Electronics & Telecommunication (EXTC) Biases:
-       - Appreciates IoT, hardware linkage, communication systems integration, and interdisciplinary scope.
-       - Dislikes proposals purely software-based with no hardware or circuit-level applications.
+    You are an evaluation assistant analyzing a course proposal.
+    Generate the summary by analyzing the proposal
 
     Context:
     {% for doc in documents %}
     {{ doc.content }}
     {% endfor %}
-
-    Task:
-    - Analyze how well this proposal aligns with each department’s interests and biases but dont display in answers
-    - Compute an overall acceptance chance (average of all four).
-    - Finally, provide 4 overall recommendations to improve overall approval rate.
-    -Display  overall acceptance chance (average of all four) and provide 4 overall recommendations to improve overall approval rate.
-
-    Return output in a clean readable structured format like this:
-    
-    
-    IMPORTANT OUTPUT RULES:
-    - No markdown formatting
-    - No **bold**, *, bullet points, or numbered lists
-    - Use plain text sentences only
-        
-
-    Output format:
-    Overall Acceptance Chance: X%
-    Overall Recommendations:
-    - ...
-    - ...
-    - ...
-    ---
+   
 
     Question: {{question}}
     Answer:
@@ -139,7 +100,7 @@ pipeline.connect("prompt_builder", "llm")
 
 
 query = """
-You are an academic evaluation assistant so give the overall acceptance chance (average of all four) and provide 4 overall recommendations to improve overall approval rate.
+You are an academic evaluation assistant so provide a summary by evaluating the proposal.
 """
 
 result = pipeline.run({
@@ -147,10 +108,7 @@ result = pipeline.run({
     "prompt_builder": {"question": query}
 })
 
-print("\n-------- CSE Department Voting Analysis --------\n")
+print("\n----Summary-----\n")
 print(result["llm"]["replies"][0])
-
-
-
 
 
