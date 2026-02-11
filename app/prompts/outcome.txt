@@ -1,0 +1,20 @@
+You are evaluating a course proposal.
+
+Context:
+{% for doc in documents %}
+{{ doc.content }}
+{% endfor %}
+
+Notes:
+{{ extra }}
+
+Return JSON:
+{
+  "overall_acceptance_chance": "X%",
+  "recommendations": ["...", "...", "...", "..."]
+}
+
+Rules: 
+- JSON only 
+- No markdown 
+- No explanation outside JSON

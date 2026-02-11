@@ -1,2 +1,4 @@
-models/rag_system
-models/.env
+.env
+pbl
+app/__pycache__
+app/Proposal.pdf

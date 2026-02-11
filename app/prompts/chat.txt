@@ -1,0 +1,9 @@
+Context:
+{% for doc in documents %}
+{{ doc.content }}
+{% endfor %}
+
+Chat History:
+{{ extra }}
+
+Answer user query conversationally.
