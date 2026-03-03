@@ -11,3 +11,6 @@ CHUNK_SIZE = 300
 CHUNK_OVERLAP = 50
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+
+MONGO_URI = os.getenv("MONGO_URI")
+DB_NAME = "arbiter"

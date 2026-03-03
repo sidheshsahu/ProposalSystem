@@ -5,6 +5,9 @@ from haystack.components.generators import OpenAIGenerator
 from haystack_integrations.components.retrievers.pinecone import PineconeEmbeddingRetriever
 from haystack.utils import Secret
 from config import EMBEDDING_MODEL, LLM_MODEL
+from dotenv import load_dotenv
+import os
+load_dotenv()
 
 class UnifiedPipeline:
     def __init__(self, document_store, prompt_template):
@@ -23,7 +26,7 @@ class UnifiedPipeline:
         )
 
         self.llm = OpenAIGenerator(
-            api_key=Secret.from_env_var("GROQ_API_KEY"),
+            api_key=os.getenv("GROQ_API_KEY"),
             api_base_url="https://api.groq.com/openai/v1",
             model=LLM_MODEL,
             generation_kwargs={"temperature": 0.25}
