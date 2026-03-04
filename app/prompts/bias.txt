@@ -6,9 +6,6 @@ Context:
 {% endfor %}
 
 
-Bias:
-{{ extra }}
-
 Return JSON:
 {
   "proposal_summary": "...",

@@ -22,7 +22,7 @@ class UnifiedPipeline:
 
         self.prompt = PromptBuilder(
             template=prompt_template,
-            required_variables=["documents", "extra"]
+            required_variables=["documents"]
         )
 
         self.llm = OpenAIGenerator(
@@ -44,7 +44,7 @@ class UnifiedPipeline:
 
     def run(self, query, extra=""):
         result = self.pipeline.run({
-            "embedder": {"text": query},
-            "prompt": {"extra": extra}
+            "embedder": {"text": query+" "+extra},
+            # "prompt": {"extra": extra}
         })
         return result["llm"]["replies"][0]
