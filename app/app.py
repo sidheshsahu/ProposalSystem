@@ -9,10 +9,8 @@ from services.chat_service import run_chat
 
 st.set_page_config(page_title="Proposal Evaluator", layout="wide")
 
-st.title("📘 AI Proposal Evaluation System")
+st.title("AI Proposal Evaluation System")
 
-
-# 🔥 Namespace generator from filename
 def get_namespace(filename: str) -> str:
     name_without_ext = os.path.splitext(filename)[0]
     return name_without_ext.replace(" ", "_")
@@ -26,10 +24,10 @@ if uploaded:
 
     st.info(f"Using namespace: {namespace}")
 
-    # 🔥 Create document store WITH namespace
+   
     document_store = get_document_store(namespace=namespace)
 
-    # 🔥 Save file temporarily
+  
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as f:
         f.write(uploaded.read())
         temp_path = f.name
@@ -37,14 +35,12 @@ if uploaded:
     ingest_pdf(temp_path, document_store)
 
     st.success("PDF indexed successfully")
-    st.write(f"📊 Total vectors in this namespace: {document_store.count_documents()}")
+    st.write(f"Total vectors in this namespace: {document_store.count_documents()}")
 
-    # Store namespace + document_store in session
+  
     st.session_state.namespace = namespace
     st.session_state.document_store = document_store
 
-
-# ⚠️ Ensure document_store exists before using tabs
 if "document_store" in st.session_state:
 
     document_store = st.session_state.document_store
