@@ -1,12 +1,23 @@
 from fastapi import FastAPI, UploadFile, File, Form
+from bson import ObjectId
+from datetime import datetime
+from fastapi import BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 import tempfile
 import json
-
+from services.db_service import (
+    get_org_context,
+    get_all_organizations,
+    get_org_memberships,
+    create_proposal,
+    create_proposal_choices,
+    create_proposal_data
+)
 from core.document_store import get_document_store
 from core.ingest import ingest_pdf
 from services.outcome_service import run_outcome
 from services.bias_service import run_bias
+from services.bias_background import process_member_bias
 from services.chat_service import run_chat
 
 app = FastAPI(title="Proposal Evaluation API")
@@ -23,36 +34,58 @@ document_store = get_document_store()
 # -------------------------------
 # EVALUATE PROPOSAL (PDF + JSON)
 # -------------------------------
+
+@app.get("/organizations")
+async def list_organizations():
+    """
+    Returns all organizations in the database
+    """
+    orgs = await get_all_organizations()
+
+    return {
+        "status": "success",
+        "count": len(orgs),
+        "organizations": orgs
+    }
+
 @app.post("/evaluate")
 async def evaluate_proposal(
     file: UploadFile = File(...),
-    notes: str = Form(...)
+    organization_id: str = Form(...)
 ):
     """
-    notes: JSON string from Node backend
+    Receives:
+    - PDF proposal
+    - organization_id
+    - notes JSON
     """
 
-    # 1. Parse notes JSON
-    try:
-        notes_data = json.loads(notes)
-    except json.JSONDecodeError:
-        return {"error": "Invalid JSON in notes"}
+    # 2. Fetch organization context
+    org_context = await get_org_context(organization_id)
 
-    # 2. Save PDF temporarily
+    if org_context is None:
+        return {"error": "Organization not found"}
+
+    # 3. Save PDF temporarily
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
         tmp.write(await file.read())
         pdf_path = tmp.name
 
-    # 3. Ingest PDF
+    # 4. Ingest PDF
     ingest_pdf(pdf_path, document_store)
 
-    # 4. Run outcome pipeline
+    # 5. Combine context for LLM
+    combined_notes = f"""
+    ORGANIZATION CONTEXT:
+    {org_context}
+    """
+
+    # 6. Run evaluation
     result = run_outcome(
         document_store=document_store,
-        notes=json.dumps(notes_data, indent=2)
+        notes=combined_notes
     )
 
-    # 5. Return result
     return {
         "status": "success",
         "evaluation": result
@@ -63,38 +96,89 @@ async def evaluate_proposal(
 # -------------------------------
 @app.post("/bias-evaluate")
 async def bias_evaluate(
+    background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
-    bias: str = Form(...)
+    org_id: str = Form(...),
+    title: str = Form(...),
+    mediaUrl: str = Form(...),
+    deadline: str = Form(...),
+    proposalChoices: str = Form(...)  # JSON array
 ):
     """
-    bias: JSON or plain text describing stakeholder bias
+    Creates proposal + bias-aware summaries
     """
 
-    # 1. Parse bias (if JSON)
+    # -------------------------------
+    # 1. Parse proposal choices
+    # -------------------------------
     try:
-        bias_data = json.loads(bias)
-        bias_text = json.dumps(bias_data, indent=2)
-    except json.JSONDecodeError:
-        bias_text = bias  # allow plain text too
+        choices = json.loads(proposalChoices)
+    except:
+        return {"error": "Invalid proposalChoices JSON"}
 
-    # 2. Save PDF temporarily
+    # -------------------------------
+    # 2. Get org context
+    # -------------------------------
+    org = await get_org_context(org_id)
+    if not org:
+        return {"error": "Organization not found"}
+
+    org_context = org.get("context", "")
+
+    # -------------------------------
+    # 3. Save PDF
+    # -------------------------------
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
         tmp.write(await file.read())
         pdf_path = tmp.name
 
-    # 3. Ingest proposal PDF
+    # -------------------------------
+    # 4. Ingest PDF
+    # -------------------------------
     ingest_pdf(pdf_path, document_store)
 
-    # 4. Run bias pipeline
-    result = run_bias(
+    # -------------------------------
+    # 5. Generate generic summary
+    # -------------------------------
+    summary = run_outcome(
         document_store=document_store,
-        bias_text=bias_text
+        notes=f"ORG CONTEXT:\n{org_context}"
     )
 
-    # 5. Return result
+    # -------------------------------
+    # 6. Create Proposal
+    # -------------------------------
+    proposal_data = {
+        "title": title,
+        "mediaUrl": mediaUrl,
+        "deadline": datetime.fromisoformat(deadline),
+        "summary": summary,
+        "orgId": ObjectId(org_id),
+        "proposalStatus": "UPCOMING",
+        "createdAt": datetime.utcnow()
+    }
+
+    proposal_id = await create_proposal(proposal_data)
+
+    # -------------------------------
+    # 7. Create Proposal Choices
+    # -------------------------------
+    await create_proposal_choices(proposal_id, choices)
+
+    # -------------------------------
+    # 8. Background: generate bias summaries
+    # -------------------------------
+    background_tasks.add_task(
+        process_member_bias,
+        org_id,
+        proposal_id,
+        summary
+    )
+
     return {
         "status": "success",
-        "bias_evaluation": result
+        "proposal_id": proposal_id,
+        "summary": summary
     }
 
 # -------------------------------
