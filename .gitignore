@@ -5,3 +5,4 @@ app/Proposal.pdf
 sahu
 models/__pycache__
 app/Blockchain_Course_Proposal.pdf
+.env
