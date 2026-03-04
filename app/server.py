@@ -5,6 +5,7 @@ from fastapi import BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 import tempfile
 import json
+import os
 from services.db_service import (
     get_org_context,
     get_all_organizations,
@@ -28,6 +29,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# def get_namespace(filename: str) -> str:
+#     name_without_ext = os.path.splitext(filename)[0]
+#     return name_without_ext.replace(" ", "_")
 
 document_store = get_document_store()
 
