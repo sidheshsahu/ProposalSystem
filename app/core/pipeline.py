@@ -26,11 +26,11 @@ class UnifiedPipeline:
         )
 
         self.llm = OpenAIGenerator(
-            api_key=Secret.from_env_var("GROQ_API_KEY"),
-            api_base_url="https://api.groq.com/openai/v1",
-            model=LLM_MODEL,
-            generation_kwargs={"temperature": 0.25}
-        )
+                api_key=Secret.from_env_var("GROQ_API_KEY"),
+                api_base_url="https://api.groq.com/openai/v1",
+                model=LLM_MODEL,
+                generation_kwargs={"temperature": 0.25}
+            )
 
         self.pipeline = Pipeline()
         self.pipeline.add_component("embedder", self.embedder)

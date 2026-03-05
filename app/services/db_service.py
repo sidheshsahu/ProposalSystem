@@ -17,7 +17,7 @@ db = client[DB_NAME]
 # -------------------------------
 
 async def get_all_organizations():
-    orgs = await db.Organization.find({}).to_list(None)
+    orgs = await db.Proposal.find({}).to_list(None)
 
     # Convert ObjectId to string
     for org in orgs:
