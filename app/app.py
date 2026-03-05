@@ -15,7 +15,6 @@ def get_namespace(filename: str) -> str:
     name_without_ext = os.path.splitext(filename)[0]
     return name_without_ext.replace(" ", "_")
 
-
 uploaded = st.file_uploader("Upload Proposal PDF", type=["pdf"])
 
 if uploaded:
@@ -24,20 +23,23 @@ if uploaded:
 
     st.info(f"Using namespace: {namespace}")
 
-   
     document_store = get_document_store(namespace=namespace)
 
-  
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as f:
-        f.write(uploaded.read())
-        temp_path = f.name
+    existing_docs = document_store.count_documents()
 
-    ingest_pdf(temp_path, document_store)
+    if existing_docs > 0:
+        st.warning(f"Namespace already has {existing_docs} vectors. Skipping indexing.")
 
-    st.success("PDF indexed successfully")
-    st.write(f"Total vectors in this namespace: {document_store.count_documents()}")
+    else:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as f:
+            f.write(uploaded.read())
+            temp_path = f.name
 
-  
+        ingest_pdf(temp_path, document_store)
+
+        st.success("PDF indexed successfully")
+        st.write(f"Total vectors in this namespace: {document_store.count_documents()}")
+
     st.session_state.namespace = namespace
     st.session_state.document_store = document_store
 

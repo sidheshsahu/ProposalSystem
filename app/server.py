@@ -30,11 +30,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# def get_namespace(filename: str) -> str:
-#     name_without_ext = os.path.splitext(filename)[0]
-#     return name_without_ext.replace(" ", "_")
 
-document_store = get_document_store()
+
+
+def get_namespace(filename: str) -> str:
+    name_without_ext = os.path.splitext(filename)[0]
+    return name_without_ext.replace(" ", "_")
+
+# document_store = get_document_store()
 
 # -------------------------------
 # EVALUATE PROPOSAL (PDF + JSON)
@@ -71,13 +74,18 @@ async def evaluate_proposal(
     if org_context is None:
         return {"error": "Organization not found"}
 
+    namespace = get_namespace(file.filename)
+
+    document_store = get_document_store(namespace=namespace)
+
     # 3. Save PDF temporarily
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
         tmp.write(await file.read())
         pdf_path = tmp.name
 
     # 4. Ingest PDF
-    ingest_pdf(pdf_path, document_store)
+    if document_store.count_documents() == 0:
+        ingest_pdf(pdf_path, document_store)
 
     # 5. Combine context for LLM
     combined_notes = f"""
@@ -130,6 +138,11 @@ async def bias_evaluate(
 
     org_context = org.get("context", "")
 
+
+    namespace = get_namespace(file.filename)
+
+    document_store = get_document_store(namespace=namespace)
+
     # -------------------------------
     # 3. Save PDF
     # -------------------------------
@@ -140,7 +153,9 @@ async def bias_evaluate(
     # -------------------------------
     # 4. Ingest PDF
     # -------------------------------
-    ingest_pdf(pdf_path, document_store)
+    if document_store.count_documents() == 0:
+        ingest_pdf(pdf_path, document_store)
+
 
     # -------------------------------
     # 5. Generate generic summary
@@ -207,13 +222,18 @@ async def chat_evaluate(
     except json.JSONDecodeError:
         history_text = history
 
+
+    namespace = get_namespace(file.filename)
+
+    document_store = get_document_store(namespace=namespace)
+
     # 2. Save PDF temporarily
     with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
         tmp.write(await file.read())
         pdf_path = tmp.name
 
-    # 3. Ingest PDF
-    ingest_pdf(pdf_path, document_store)
+    if document_store.count_documents() == 0:
+        ingest_pdf(pdf_path, document_store)
 
     # 4. Run chat pipeline
     reply = run_chat(
