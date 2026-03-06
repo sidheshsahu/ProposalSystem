@@ -43,6 +43,10 @@ def get_namespace(filename: str) -> str:
 # EVALUATE PROPOSAL (PDF + JSON)
 # -------------------------------
 
+@app.get("/")
+def health():
+    return {"status": "API running"}
+
 @app.get("/organizations")
 async def list_organizations():
     """
