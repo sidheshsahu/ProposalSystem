@@ -21,3 +21,7 @@ def ingest_pdf(pdf_path, document_store):
     docs = embedder.run(docs)["documents"]
 
     document_store.write_documents(docs)
+
+
+
+
