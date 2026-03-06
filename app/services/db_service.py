@@ -17,7 +17,7 @@ db = client[DB_NAME]
 # -------------------------------
 
 async def get_all_organizations():
-    orgs = await db.Proposal.find({}).to_list(None)
+    orgs = await db.Organisation.find({}).to_list(None)
 
     # Convert ObjectId to string
     for org in orgs:
@@ -37,14 +37,14 @@ async def get_org_context(org_id: str):
 # -------------------------------
 
 async def get_org_memberships(org_id: str):
-    return await db.memberships.find({"orgId": ObjectId(org_id)}).to_list(None)
+    return await db.Membership.find({"orgId": ObjectId(org_id)}).to_list(None)
 
 # -------------------------------
 # PROPOSAL
 # -------------------------------
 
 async def create_proposal(data: dict):
-    result = await db.proposals.insert_one(data)
+    result = await db.Proposal.insert_one(data)
     return str(result.inserted_id)
 
 async def create_proposal_choices(proposal_id: str, choices: list):
@@ -56,8 +56,8 @@ async def create_proposal_choices(proposal_id: str, choices: list):
         for choice in choices
     ]
     if docs:
-        await db.proposalchoices.insert_many(docs)
+        await db.ProposalChoice.insert_many(docs)
 
 async def create_proposal_data(entries: list):
     if entries:
-        await db.proposaldatas.insert_many(entries)
+        await db.ProposalData.insert_many(entries)
