@@ -4,4 +4,8 @@ from prompts.prompt_loader import load_prompt
 def run_bias(document_store, bias_text):
     prompt = load_prompt("bias.txt")
     pipeline = UnifiedPipeline(document_store, prompt)
-    return pipeline.run("Analyze proposal", bias_text)
+    return pipeline.run("Evaluate proposal based on bias criteria:", bias_text)
+
+
+
+
