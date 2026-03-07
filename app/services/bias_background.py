@@ -33,7 +33,7 @@ async def process_member_bias(org_id: str, proposal_id: str, proposal_summary: s
 
     # 🔥 Activate proposal after processing
     from services.db_service import db
-    await db.proposals.update_one(
+    await db.Proposal.update_one(
         {"_id": ObjectId(proposal_id)},
         {"$set": {"proposalStatus": "ACTIVE"}}
     )
