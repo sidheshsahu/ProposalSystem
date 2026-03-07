@@ -1,4 +1,5 @@
 from motor.motor_asyncio import AsyncIOMotorClient
+from typing import List
 from bson import ObjectId
 from datetime import datetime
 import os
@@ -47,7 +48,7 @@ async def create_proposal(data: dict):
     result = await db.Proposal.insert_one(data)
     return str(result.inserted_id)
 
-async def create_proposal_choices(proposal_id: str, choices: list):
+async def create_proposal_choices(proposal_id: str, choices: List[str]):
     docs = [
         {
             "proposalId": ObjectId(proposal_id),
