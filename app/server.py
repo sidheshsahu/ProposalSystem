@@ -64,7 +64,7 @@ async def list_organizations():
 @app.post("/evaluate")
 async def evaluate_proposal(
     file: UploadFile = File(...),
-    organization_id: str = Form(...)
+    org_id: str = Form(...)
 ):
     """
     Receives:
@@ -74,7 +74,7 @@ async def evaluate_proposal(
     """
 
     # 2. Fetch organization context
-    org_context = await get_org_context(organization_id)
+    org_context = await get_org_context(org_id)
 
     if org_context is None:
         return {"error": "Organization not found"}
