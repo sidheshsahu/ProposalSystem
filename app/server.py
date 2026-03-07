@@ -1,4 +1,5 @@
 from fastapi import FastAPI, UploadFile, File, Form
+from typing import List
 from bson import ObjectId
 from datetime import datetime
 from fastapi import BackgroundTasks
@@ -119,19 +120,13 @@ async def bias_evaluate(
     title: str = Form(...),
     mediaUrl: str = Form(...),
     deadline: str = Form(...),
-    proposalChoices: str = Form(...)  # JSON array
+    proposalChoices: List[str] = Form(...)
 ):
     """
     Creates proposal + bias-aware summaries
     """
 
-    # -------------------------------
-    # 1. Parse proposal choices
-    # -------------------------------
-    try:
-        choices = json.loads(proposalChoices)
-    except:
-        return {"error": "Invalid proposalChoices JSON"}
+    choices = proposalChoices
 
     # -------------------------------
     # 2. Get org context
@@ -179,7 +174,8 @@ async def bias_evaluate(
         "summary": summary,
         "orgId": ObjectId(org_id),
         "proposalStatus": "UPCOMING",
-        "createdAt": datetime.utcnow()
+        "createdAt": datetime.utcnow(),
+        "type": "TRANSPARENT"
     }
 
     proposal_id = await create_proposal(proposal_data)
