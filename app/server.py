@@ -104,9 +104,14 @@ async def evaluate_proposal(
         notes=combined_notes
     )
 
+    try:
+        result_json = json.loads(result)
+    except:
+        result_json = {"raw_output": result}
+
     return {
         "status": "success",
-        "evaluation": result
+        "evaluation": result_json
     }
 
 # -------------------------------
