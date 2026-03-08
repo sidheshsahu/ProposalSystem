@@ -13,7 +13,8 @@ from services.db_service import (
     get_org_memberships,
     create_proposal,
     create_proposal_choices,
-    create_proposal_data
+    create_proposal_data, get_messages,
+    save_message
 )
 from core.document_store import get_document_store
 from core.ingest import ingest_pdf
@@ -30,8 +31,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
 
 
 def get_namespace(filename: str) -> str:
@@ -72,7 +71,7 @@ async def evaluate_proposal(
     - organization_id
     - notes JSON
     """
-
+    
     # 2. Fetch organization context
     org_context = await get_org_context(organization_id)
 
@@ -206,8 +205,8 @@ async def bias_evaluate(
 # -------------------------------
 @app.post("/chat-evaluate")
 async def chat_evaluate(
-    file: UploadFile = File(...),
-    history: str = Form(""),
+    user_id: str = Form(...),
+    proposal_id: str = Form(...),
     query: str = Form(...)
 ):
     """
@@ -216,34 +215,17 @@ async def chat_evaluate(
     """
 
     # 1. Normalize chat history
-    try:
-        history_data = json.loads(history)
-        history_text = json.dumps(history_data, indent=2)
-    except json.JSONDecodeError:
-        history_text = history
+    history = await get_messages(user_id, proposal_id)
+
+    reply_text = run_chat(history=history, query=query)
 
 
-    namespace = get_namespace(file.filename)
+    await save_message(user_id, proposal_id, author="USER", text=query)
 
-    document_store = get_document_store(namespace=namespace)
+    await save_message(user_id, proposal_id, author="AI", text=reply_text)
 
-    # 2. Save PDF temporarily
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".pdf") as tmp:
-        tmp.write(await file.read())
-        pdf_path = tmp.name
-
-    if document_store.count_documents() == 0:
-        ingest_pdf(pdf_path, document_store)
-
-    # 4. Run chat pipeline
-    reply = run_chat(
-        document_store=document_store,
-        history=history_text,
-        query=query
-    )
-
-    # 5. Return reply
+    
     return {
-        "status": "success",
-        "reply": reply
+        "status":"success",
+        "reply": reply_text
     }
