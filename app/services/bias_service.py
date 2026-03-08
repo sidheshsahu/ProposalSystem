@@ -5,7 +5,3 @@ def run_bias(document_store, bias_text):
     prompt = load_prompt("bias.txt")
     pipeline = UnifiedPipeline(document_store, prompt)
     return pipeline.run("Evaluate proposal based on bias criteria:", bias_text)
-
-
-
-

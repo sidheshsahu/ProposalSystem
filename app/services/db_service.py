@@ -62,3 +62,37 @@ async def create_proposal_choices(proposal_id: str, choices: List[str]):
 async def create_proposal_data(entries: list):
     if entries:
         await db.ProposalData.insert_many(entries)
+
+
+async def get_messages(user_id: str, proposal_id: str):
+    messages = await db.Message.find(
+        {
+            "user._id": ObjectId(user_id),
+            "proposalId": ObjectId(proposal_id)
+        }
+    ).sort("createdAt", 1).to_list(None)
+
+    history = []
+    for m in messages:
+        role = "assistant" if m["author"] == "AI" else "user"
+        history.append({
+            "role": role,
+            "content": m["text"]
+        })
+
+    return history
+
+async def save_message(user_id: str, proposal_id: str, author: str, text: str):
+    """
+    Save a chat message with embedded user info for RAG
+    """
+    doc = {
+        "author": author,  # "USER" or "AI"
+        "text": text,
+        "user": ObjectId(user_id),
+        "proposalId": ObjectId(proposal_id),
+        "createdAt": datetime.now()
+    }
+    await db.Message.insert_one(doc)
+
+

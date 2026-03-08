@@ -72,9 +72,3 @@ if "document_store" in st.session_state:
             st.session_state.chat += f"\nUser: {query}\nAI: {reply}"
 
         st.text_area("Conversation", st.session_state.chat, height=300)
-
-
-# document_store.delete_documents(
-#     namespace=target_namespace,
-#     all_documents=True
-# )

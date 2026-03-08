@@ -45,6 +45,12 @@ class UnifiedPipeline:
     def run(self, query, extra=""):
         result = self.pipeline.run({
             "embedder": {"text": query+" "+extra},
-            # "prompt": {"extra": extra}
+        })
+        return result["llm"]["replies"][0]
+    
+    def run_chat(self, query, extra=""):
+        result = self.pipeline.run({
+            "embedder": {"text": query},
+            "prompt": {"extra": extra}
         })
         return result["llm"]["replies"][0]
