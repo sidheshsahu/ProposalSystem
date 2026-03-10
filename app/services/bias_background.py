@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from services.db_service import get_org_memberships, create_proposal_data
 from services.bias_service import run_bias
 from bson import ObjectId
@@ -35,5 +36,6 @@ async def process_member_bias(org_id: str, proposal_id: str, proposal_summary: s
     from services.db_service import db
     await db.Proposal.update_one(
         {"_id": ObjectId(proposal_id)},
-        {"$set": {"proposalStatus": "ACTIVE"}}
+        {"$set": {"proposalStatus": "ACTIVE",
+        "startTime": datetime.now(timezone.utc).isoformat()}}
     )
