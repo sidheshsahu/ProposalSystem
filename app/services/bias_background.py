@@ -45,5 +45,5 @@ async def process_member_bias(org_id: str, proposal_id: str, namespace: str):
     await db.Proposal.update_one(
         {"_id": ObjectId(proposal_id)},
         {"$set": {"proposalStatus": "ACTIVE",
-        "startTime": datetime.now(timezone.utc).isoformat()}}
+        "startTime": datetime.now(timezone.utc)}}
     )
