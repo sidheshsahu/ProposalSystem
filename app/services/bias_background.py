@@ -26,12 +26,10 @@ async def process_member_bias(org_id: str, proposal_id: str, namespace: str):
             """
         )
 
-        result_text = result["llm"]["replies"][0]
-
         try:
-            result_json = json.loads(result_text)
+            result_json = json.loads(result)
         except:
-            result_json = {"raw_output": result_text}
+            result_json = {"raw_output": result}
 
         proposal_entries.append({
             "summary": result_json.get("reason", ""),

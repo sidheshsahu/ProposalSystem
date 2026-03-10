@@ -18,7 +18,7 @@ db = client[DB_NAME]
 # -------------------------------
 
 async def get_all_organizations():
-    orgs = await db.Organisation.find({}).to_list(None)
+    orgs = await db.Organization.find({}).to_list(None)
 
     # Convert ObjectId to string
     for org in orgs:
@@ -67,7 +67,7 @@ async def create_proposal_data(entries: list):
 async def get_messages(user_id: str, proposal_id: str):
     messages = await db.Message.find(
         {
-            "user._id": ObjectId(user_id),
+            "userId": ObjectId(user_id),
             "proposalId": ObjectId(proposal_id)
         }
     ).sort("createdAt", 1).to_list(None)
