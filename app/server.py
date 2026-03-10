@@ -140,6 +140,10 @@ async def bias_evaluate(
     if not org:
         return {"error": "Organization not found"}
 
+
+    namespace = get_namespace(file.filename)
+
+    document_store = get_document_store(namespace=namespace)
     
 
 
@@ -150,7 +154,8 @@ async def bias_evaluate(
         tmp.write(await file.read())
         pdf_path = tmp.name
 
-
+    if document_store.count_documents() == 0:
+        ingest_pdf(pdf_path, document_store)
 
     # -------------------------------
     # 5. Generate generic summary
@@ -187,7 +192,7 @@ async def bias_evaluate(
         process_member_bias,
         org_id,
         proposal_id,
-        summary
+        namespace
     )
 
     return {
