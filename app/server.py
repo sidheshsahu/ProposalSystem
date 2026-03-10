@@ -5,7 +5,7 @@ from datetime import datetime
 from fastapi import BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 import tempfile
-from app.core.summarizer import generic_summarizer
+from core.summarizer import generic_summarizer
 import json
 import os
 from services.db_service import (
