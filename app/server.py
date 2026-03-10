@@ -5,6 +5,7 @@ from datetime import datetime
 from fastapi import BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 import tempfile
+from app.core.summarizer import generic_summarizer
 import json
 import os
 from services.db_service import (
@@ -139,12 +140,8 @@ async def bias_evaluate(
     if not org:
         return {"error": "Organization not found"}
 
-    org_context = org.get("context", "")
+    
 
-
-    namespace = get_namespace(file.filename)
-
-    document_store = get_document_store(namespace=namespace)
 
     # -------------------------------
     # 3. Save PDF
@@ -153,19 +150,13 @@ async def bias_evaluate(
         tmp.write(await file.read())
         pdf_path = tmp.name
 
-    # -------------------------------
-    # 4. Ingest PDF
-    # -------------------------------
-    if document_store.count_documents() == 0:
-        ingest_pdf(pdf_path, document_store)
 
 
     # -------------------------------
     # 5. Generate generic summary
     # -------------------------------
-    summary = run_outcome(
-        document_store=document_store,
-        notes=f"ORG CONTEXT:\n{org_context}"
+    summary = generic_summarizer(
+       pdf_path=pdf_path
     )
 
     # -------------------------------
