@@ -179,9 +179,8 @@ async def bias_evaluate(
     # -------------------------------
     await create_proposal_choices(proposal_id, choices)
 
-    namespace = get_namespace(proposal_id)
 
-    document_store = get_document_store(namespace=namespace)
+    document_store = get_document_store(namespace=proposal_id)
 
     if document_store.count_documents() == 0:
         ingest_pdf(pdf_path, document_store)
@@ -220,10 +219,10 @@ async def chat_evaluate(
     history = await get_messages(user_id, proposal_id)
 
    
-    namespace = get_namespace(proposal_id)
+    
    
 
-    document_store = get_document_store(namespace=namespace)
+    document_store = get_document_store(namespace=proposal_id)
 
     reply_text = run_chat(document_store=document_store, history=history, query=query)
 
