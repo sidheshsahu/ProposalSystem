@@ -19,6 +19,7 @@ async def process_member_bias(org_id: str, proposal_id: str, namespace: str):
 
         # Run AI bias evaluation
         result = run_bias(
+            
             document_store=document_store,
             bias_text=f"""
             MEMBER BIAS:
