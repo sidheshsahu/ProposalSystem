@@ -220,8 +220,8 @@ async def chat_evaluate(
     history = await get_messages(user_id, proposal_id)
 
    
-    # namespace = get_namespace(proposal_id)
-    namespace = "69b1865ea6e1ae6303a680ed"
+    namespace = get_namespace(proposal_id)
+   
 
     document_store = get_document_store(namespace=namespace)
 
