@@ -5,21 +5,18 @@ from bson import ObjectId
 from services.db_service import db
 import json
 import os
-from core.document_store import get_document_store
 
-async def process_member_bias(org_id: str, proposal_id: str, namespace: str):
+
+async def process_member_bias(org_id: str, proposal_id: str, document_store):
     memberships = await get_org_memberships(org_id)
 
     proposal_entries = []
-
-    document_store = get_document_store(namespace=namespace)
 
     for member in memberships:
         bias_text = member.get("bias", "")
 
         # Run AI bias evaluation
         result = run_bias(
-            
             document_store=document_store,
             bias_text=f"""
             MEMBER BIAS:

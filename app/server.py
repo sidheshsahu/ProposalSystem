@@ -104,6 +104,8 @@ async def evaluate_proposal(
         notes=combined_notes
     )
 
+    document_store.delete_all_documents()
+
     try:
         result_json = json.loads(result)
     except:
@@ -140,13 +142,6 @@ async def bias_evaluate(
     if not org:
         return {"error": "Organization not found"}
 
-
-    namespace = get_namespace(file.filename)
-
-    document_store = get_document_store(namespace=namespace)
-    
-
-
     # -------------------------------
     # 3. Save PDF
     # -------------------------------
@@ -154,8 +149,7 @@ async def bias_evaluate(
         tmp.write(await file.read())
         pdf_path = tmp.name
 
-    if document_store.count_documents() == 0:
-        ingest_pdf(pdf_path, document_store)
+    
 
     # -------------------------------
     # 5. Generate generic summary
@@ -185,6 +179,13 @@ async def bias_evaluate(
     # -------------------------------
     await create_proposal_choices(proposal_id, choices)
 
+    namespace = get_namespace(proposal_id)
+
+    document_store = get_document_store(namespace=namespace)
+
+    if document_store.count_documents() == 0:
+        ingest_pdf(pdf_path, document_store)
+
     # -------------------------------
     # 8. Background: generate bias summaries
     # -------------------------------
@@ -192,7 +193,7 @@ async def bias_evaluate(
         process_member_bias,
         org_id,
         proposal_id,
-        namespace
+        document_store
     )
 
     return {
@@ -218,14 +219,17 @@ async def chat_evaluate(
     # 1. Normalize chat history
     history = await get_messages(user_id, proposal_id)
 
-    reply_text = run_chat(history=history, query=query)
+   
+    # namespace = get_namespace(proposal_id)
+    namespace = "69b1865ea6e1ae6303a680ed"
 
+    document_store = get_document_store(namespace=namespace)
 
-    await save_message(user_id, proposal_id, author="USER", text=query)
+    reply_text = run_chat(document_store=document_store, history=history, query=query)
+
 
     await save_message(user_id, proposal_id, author="AI", text=reply_text)
 
-    
     return {
         "status":"success",
         "reply": reply_text
