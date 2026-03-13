@@ -33,7 +33,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 def get_namespace(filename: str) -> str:
     name_without_ext = os.path.splitext(filename)[0]
     return name_without_ext.replace(" ", "_")

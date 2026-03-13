@@ -73,14 +73,16 @@ async def get_messages(user_id: str, proposal_id: str):
     ).sort("createdAt", 1).to_list(None)
 
     history = []
-    for m in messages:
+    for m in messages[:-1]:
         role = "assistant" if m["author"] == "AI" else "user"
         history.append({
             "role": role,
             "content": m["text"]
         })
 
-    return history
+    query = messages[-1]["text"]
+
+    return history, query
 
 async def save_message(user_id: str, proposal_id: str, author: str, text: str):
     """
