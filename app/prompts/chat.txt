@@ -6,4 +6,4 @@ Context:
 Chat History:
 {{ extra }}
 
-Answer user query conversationally.
+Answer user query conversationally and properly.
