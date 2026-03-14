@@ -149,7 +149,6 @@ async def bias_evaluate(
         pdf_path = tmp.name
 
     
-
     # -------------------------------
     # 5. Generate generic summary
     # -------------------------------

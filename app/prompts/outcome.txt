@@ -1,6 +1,9 @@
 You are evaluating a course proposal.
 
-Context:
+Organization Context:
+{{ extra }}
+
+Retrieved Context:
 {% for doc in documents %}
 {{ doc.content }}
 {% endfor %}
@@ -14,7 +17,9 @@ Return JSON:
   "recommendations": ["...", "...", "...", "..."]
 }
 
-Rules: 
-- JSON only 
-- No markdown 
+Rules:
+- Consider the organization context when generating recommendations
+- Use retrieved context as supporting information
+- JSON only
+- No markdown
 - No explanation outside JSON
