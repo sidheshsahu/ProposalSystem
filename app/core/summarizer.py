@@ -16,8 +16,40 @@ def generic_summarizer(pdf_path):
         documents = [Document(content=text)]
       
         template = """
-        Summarize the following document.
+        You are an expert proposal analyst.
 
+        Analyze the following proposal document and generate a response in STRICT JSON format.
+
+        JSON structure:
+
+        {
+          "text": "Overall summary of the proposal in 5 to 10 lines",
+          "accept": [
+            "1. Reason",
+            "2. Reason",
+            "3. Reason",
+            "4. Reason",
+            "5. Reason"
+          ],
+          "reject": [
+            "1. Reason",
+            "2. Reason",
+            "3. Reason",
+            "4. Reason",
+            "5. Reason"
+          ]
+        }
+
+        Instructions:
+        - The document is a **proposal**.
+        - "text" must contain an overall summary of the proposal in **5 to 10 lines**.
+        - "accept" must contain **exactly 5 numbered reasons** why the proposal should be accepted.
+        - "reject" must contain **exactly 5 numbered reasons** why the proposal might be rejected.
+        - Each reason must start with numbering like **1., 2., 3., 4., 5.**
+        - Keep the points concise and meaningful.
+        - Return **ONLY valid JSON**. Do not add any explanation or text outside the JSON.
+
+        Proposal Document:
         {% for doc in documents %}
         {{ doc.content }}
         {% endfor %}
@@ -45,3 +77,6 @@ def generic_summarizer(pdf_path):
         })
 
         return result["llm"]["replies"][0]
+
+
+

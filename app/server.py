@@ -33,7 +33,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 def get_namespace(filename: str) -> str:
     name_without_ext = os.path.splitext(filename)[0]
     return name_without_ext.replace(" ", "_")
@@ -158,6 +157,11 @@ async def bias_evaluate(
        pdf_path=pdf_path
     )
 
+    try:
+        summary_json = json.loads(summary)
+    except:
+        summary_json = {"raw_output": summary}
+
     # -------------------------------
     # 6. Create Proposal
     # -------------------------------
@@ -165,7 +169,7 @@ async def bias_evaluate(
         "title": title,
         "mediaUrl": mediaUrl,
         "deadline": datetime.fromisoformat(deadline),
-        "summary": summary,
+        "summary": summary_json,
         "orgId": ObjectId(org_id),
         "proposalStatus": "UPCOMING",
         "createdAt": datetime.utcnow(),
@@ -179,9 +183,8 @@ async def bias_evaluate(
     # -------------------------------
     await create_proposal_choices(proposal_id, choices)
 
-    namespace = get_namespace(proposal_id)
 
-    document_store = get_document_store(namespace=namespace)
+    document_store = get_document_store(namespace=proposal_id)
 
     if document_store.count_documents() == 0:
         ingest_pdf(pdf_path, document_store)
@@ -199,7 +202,7 @@ async def bias_evaluate(
     return {
         "status": "success",
         "proposal_id": proposal_id,
-        "summary": summary
+        "summary": summary_json
     }
 
 # -------------------------------
@@ -209,7 +212,6 @@ async def bias_evaluate(
 async def chat_evaluate(
     user_id: str = Form(...),
     proposal_id: str = Form(...),
-    query: str = Form(...)
 ):
     """
     history: chat history (JSON string or plain text)
@@ -217,13 +219,9 @@ async def chat_evaluate(
     """
 
     # 1. Normalize chat history
-    history = await get_messages(user_id, proposal_id)
+    history,query = await get_messages(user_id, proposal_id)
 
-   
-    namespace = get_namespace(proposal_id)
-   
-
-    document_store = get_document_store(namespace=namespace)
+    document_store = get_document_store(namespace=proposal_id)
 
     reply_text = run_chat(document_store=document_store, history=history, query=query)
 
