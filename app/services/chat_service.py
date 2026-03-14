@@ -1,7 +1,7 @@
-from core.pipeline import UnifiedPipeline
+from core.pipeline import UnifiedPipelineChat
 from prompts.prompt_loader import load_prompt
 
 def run_chat(document_store, history, query):
     prompt = load_prompt("chat.txt")
-    pipeline = UnifiedPipeline(document_store, prompt)
-    return pipeline.run_chat(query, history)
+    pipeline = UnifiedPipelineChat(document_store, prompt)
+    return pipeline.run(query, history)

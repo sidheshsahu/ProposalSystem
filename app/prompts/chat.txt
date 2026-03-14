@@ -1,9 +1,20 @@
+You are a helpful AI assistant.
+
+Use the provided context only to answer the user's current question.
+
 Context:
 {% for doc in documents %}
 {{ doc.content }}
 {% endfor %}
 
-Chat History:
+Chat History (for reference only, do not repeat it in the answer):
 {{ extra }}
 
-Answer user query conversationally and properly.
+Instruction:
+- Answer ONLY the current user question.
+- Do NOT repeat previous answers.
+- Use chat history only if needed for understanding context.
+- Keep the answer concise and conversational.
+
+User Question:
+{{ query }}

@@ -5,6 +5,9 @@ Context:
 {{ doc.content }}
 {% endfor %}
 
+Query:
+{{ query }}
+
 Return JSON:
 {
   "overall_acceptance_chance": "X%",

@@ -22,7 +22,7 @@ class UnifiedPipeline:
 
         self.prompt = PromptBuilder(
             template=prompt_template,
-            required_variables=["documents"]
+            required_variables=["documents","query"]
         )
 
         self.llm = OpenAIGenerator(
@@ -44,13 +44,50 @@ class UnifiedPipeline:
 
     def run(self, query, extra=""):
         result = self.pipeline.run({
-            "embedder": {"text": query+" "+extra},
+            "embedder": {"text": extra},
+            "prompt": {"query": query}
         })
         return result["llm"]["replies"][0]
+
+
+
+
+class UnifiedPipelineChat:
+    def __init__(self, document_store, prompt_template):
+        self.embedder = SentenceTransformersTextEmbedder(
+            model=EMBEDDING_MODEL
+        )
+        self.embedder.warm_up()
+
+        self.retriever = PineconeEmbeddingRetriever(
+            document_store=document_store
+        )
+
+        self.prompt = PromptBuilder(
+            template=prompt_template,
+            required_variables=["documents","query","extra"]
+        )
+
+        self.llm = OpenAIGenerator(
+                api_key=Secret.from_env_var("GROQ_API_KEY"),
+                api_base_url="https://api.groq.com/openai/v1",
+                model=LLM_MODEL,
+                generation_kwargs={"temperature": 0.25}
+            )
+
+        self.pipeline = Pipeline()
+        self.pipeline.add_component("embedder", self.embedder)
+        self.pipeline.add_component("retriever", self.retriever)
+        self.pipeline.add_component("prompt", self.prompt)
+        self.pipeline.add_component("llm", self.llm)
+
+        self.pipeline.connect("embedder.embedding", "retriever.query_embedding")
+        self.pipeline.connect("retriever.documents", "prompt.documents")
+        self.pipeline.connect("prompt", "llm")
     
-    def run_chat(self, query, extra=""):
+    def run(self, query, extra=""):
         result = self.pipeline.run({
             "embedder": {"text": query},
-            "prompt": {"extra": extra}
+            "prompt": {"query": query, "extra": extra}
         })
         return result["llm"]["replies"][0]

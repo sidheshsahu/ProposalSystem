@@ -5,6 +5,8 @@ Context:
 {{ doc.content }}
 {% endfor %}
 
+Query:
+{{ query }}
 
 Return JSON:
 {
