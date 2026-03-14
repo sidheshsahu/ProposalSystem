@@ -1,7 +1,7 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 from typing import List
 from bson import ObjectId
-from datetime import datetime
+from datetime import datetime, timezone
 import os
 from dotenv import load_dotenv
 load_dotenv()
@@ -89,9 +89,9 @@ async def save_message(user_id: str, proposal_id: str, author: str, text: str):
     doc = {
         "author": author,  # "USER" or "AI"
         "text": text,
-        "user": ObjectId(user_id),
+        "userId": ObjectId(user_id),
         "proposalId": ObjectId(proposal_id),
-        "createdAt": datetime.now()
+        "createdAt": datetime.now(timezone.utc)
     }
     await db.Message.insert_one(doc)
 
