@@ -98,3 +98,49 @@ async def save_message(user_id: str, proposal_id: str, author: str, text: str):
     await db.Message.insert_one(doc)
 
 
+
+async def get_proposal_outcome(proposal_id: str):
+
+    proposal = await db.Proposal.find_one(
+        {"_id": ObjectId(proposal_id)},
+        {"title":1,"summary":1,"orgId":1}
+    )
+
+    result = await db.ProposalResult.find_one(
+        {"proposalId": ObjectId(proposal_id)},
+        {"winningChoiceId":1,"totalVotes":1}
+    )
+
+    winning_choice = None
+
+    if result:
+        choice = await db.ProposalChoice.find_one(
+            {"_id": result["winningChoiceId"]},
+            {"value":1}
+        )
+        if choice:
+            winning_choice = choice["value"]
+
+    return {
+        "title": proposal["title"],
+        "summary": proposal["summary"],
+        "orgId": proposal["orgId"],
+        "totalVotes": result["totalVotes"] if result else None,
+        "winningChoice": winning_choice
+    }
+
+async def append_org_context(org_id: str, new_context: str):
+
+    org = await db.Organization.find_one(
+        {"_id": ObjectId(org_id)},
+        {"context":1}
+    )
+
+    old_context = org.get("context","")
+
+    updated_context = old_context + "\n" + new_context
+
+    await db.Organization.update_one(
+        {"_id": ObjectId(org_id)},
+        {"$set": {"context": updated_context}}
+    )

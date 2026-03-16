@@ -39,7 +39,6 @@ async def process_member_bias(org_id: str, proposal_id: str, document_store):
     await create_proposal_data(proposal_entries)
 
     
-
     await db.Proposal.update_one(
         {"_id": ObjectId(proposal_id)},
         {"$set": {"proposalStatus": "ACTIVE",

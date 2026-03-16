@@ -6,12 +6,15 @@ from fastapi import BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 import tempfile
 from core.summarizer import generic_summarizer
+from core.context_update import llm_run
 import json
 import os
 from services.db_service import (
     get_org_context,
     get_all_organizations,
     get_org_memberships,
+    get_proposal_outcome,
+    append_org_context,
     create_proposal,
     create_proposal_choices,
     create_proposal_data, get_messages,
@@ -230,4 +233,23 @@ async def chat_evaluate(
     return {
         "status":"success",
         "reply": reply_text
+    }
+
+
+
+@app.post("/generate-org-context")
+async def generate_org_context(proposal_id: str = Form(...)
+                               ):
+    proposal_data = await get_proposal_outcome(proposal_id)
+
+    context = llm_run(proposal_data)
+
+    await append_org_context(
+        proposal_data["orgId"],
+        context
+    )
+
+    return {
+        "status":"success",
+        "generated_context": context
     }
