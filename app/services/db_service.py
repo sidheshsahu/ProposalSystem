@@ -106,28 +106,67 @@ async def get_proposal_outcome(proposal_id: str):
         {"title":1,"summary":1,"orgId":1}
     )
 
-    result = await db.ProposalResult.find_one(
-        {"proposalId": ObjectId(proposal_id)},
-        {"winningChoiceId":1,"totalVotes":1}
-    )
+    pipeline = [
+        {
+            "$match": {
+                "proposalId": ObjectId(proposal_id)
+            }
+        },
+        {
+            "$group": {
+                "_id": "$choiceId",
+                "voteCount": {"$sum": "$voteValue"}
+            }
+        },
+        {
+            "$sort": {
+                "voteCount": -1
+            }
+        }
+    ]
+
+    vote_results = await db.Vote.aggregate(pipeline).to_list(length=None)
 
     winning_choice = None
+    winner_votes = 0
+    total_votes = 0
 
-    if result:
-        choice = await db.ProposalChoice.find_one(
-            {"_id": result["winningChoiceId"]},
-            {"value":1}
-        )
-        if choice:
-            winning_choice = choice["value"]
+
+    if not vote_results:
+        return {
+            "title": proposal["title"],
+            "summary": proposal["summary"],
+            "orgId": proposal["orgId"],
+            "totalVotes": 0,
+            "winnerVotes": 0,
+            "winningChoice": None
+        }
+    
+    top = vote_results[0]
+    winner_choice_id = top["_id"]
+    winner_votes = top["voteCount"]
+
+    
+    total_votes = sum(v["voteCount"] for v in vote_results)
+
+   
+    choice = await db.ProposalChoice.find_one(
+        {"_id": winner_choice_id},
+        {"value": 1}
+    )
+
+    if choice:
+        winning_choice = choice["value"]
 
     return {
         "title": proposal["title"],
         "summary": proposal["summary"],
         "orgId": proposal["orgId"],
-        "totalVotes": result["totalVotes"] if result else None,
-        "winningChoice": winning_choice
+        "totalVotes": total_votes,     
+        "winnerVotes": winner_votes,   
+        "winningChoice": winning_choice 
     }
+
 
 async def append_org_context(org_id: str, new_context: str):
 
