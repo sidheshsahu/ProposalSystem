@@ -1,14 +1,15 @@
-\"\"\"PDF processing and summarization pipeline prototype.
-
+"""
+PDF processing and summarization pipeline prototype.
 This module contains experimental code for PDF processing that demonstrates
 the complete extraction, embedding, and retrieval workflow. Serves as a reference
 for the core ingest and pipeline implementations.
-
 Notes:
 - This is a prototype/experimental module
 - Production code uses the core/ and services/ modules instead
 - Left as reference for RAG pipeline architecture
-\"\"\"
+"""
+
+
 from haystack_integrations.document_stores.pinecone import PineconeDocumentStore
 from dotenv import load_dotenv
 import os
