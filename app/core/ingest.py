@@ -1,3 +1,11 @@
+"""PDF document ingestion and embedding pipeline.
+
+This module handles the complete PDF ingestion workflow including:
+- PDF parsing to extract text
+- Chunking documents into manageable pieces
+- Generating embeddings using sentence transformers
+- Storing embeddings in the vector database
+"""
 from haystack.components.converters import PyPDFToDocument
 from haystack.components.preprocessors import DocumentSplitter
 from haystack.components.embedders import SentenceTransformersDocumentEmbedder

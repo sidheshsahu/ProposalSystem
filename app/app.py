@@ -1,3 +1,11 @@
+"""Streamlit UI for AI Proposal Evaluation System.
+
+This module provides a user-friendly web interface for evaluating proposals using:
+- PDF upload and indexing
+- Outcome prediction based on organization context
+- Bias evaluation against specific criteria  
+- Chat-based RAG (Retrieval-Augmented Generation) for interactive querying
+"""
 import streamlit as st
 import tempfile
 import os
@@ -12,6 +20,14 @@ st.set_page_config(page_title="Proposal Evaluator", layout="wide")
 st.title("AI Proposal Evaluation System")
 
 def get_namespace(filename: str) -> str:
+    """Generate a namespace identifier from a filename.
+    
+    Args:
+        filename: The original filename with extension.
+        
+    Returns:
+        A normalized namespace string with spaces replaced by underscores.
+    """
     name_without_ext = os.path.splitext(filename)[0]
     return name_without_ext.replace(" ", "_")
 

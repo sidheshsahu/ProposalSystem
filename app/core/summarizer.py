@@ -1,3 +1,8 @@
+"""Document summarization utilities using LLMs.
+
+This module provides functions to generate structured summaries of proposals
+including acceptance and rejection reasons using the Groq LLM API.
+"""
 import fitz
 from haystack import Pipeline, Document
 from haystack.components.builders import PromptBuilder

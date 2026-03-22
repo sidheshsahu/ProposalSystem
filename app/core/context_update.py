@@ -1,3 +1,8 @@
+"""LLM-based context and outcome generation.
+
+This module handles post-voting proposal outcome summaries using LLMs,
+generating concise narratives of governance decisions.
+"""
 import fitz
 from haystack import Pipeline, Document
 from haystack.components.builders import PromptBuilder

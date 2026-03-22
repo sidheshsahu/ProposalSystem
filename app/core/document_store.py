@@ -1,3 +1,8 @@
+"""Document store initialization using Pinecone vector database.
+
+This module provides utilities for initializing and configuring the Pinecone
+vector store that handles document embeddings and similarity search operations.
+"""
 from haystack_integrations.document_stores.pinecone import PineconeDocumentStore
 from config import PINECONE_INDEX
 

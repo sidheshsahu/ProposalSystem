@@ -1,3 +1,8 @@
+"""Proposal outcome evaluation service.
+
+This module evaluates the likelihood of proposal acceptance and provides
+recommendations for improvement based on organizational context.
+"""
 from core.pipeline import UnifiedPipeline
 from prompts.prompt_loader import load_prompt
 

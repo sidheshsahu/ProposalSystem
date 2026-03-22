@@ -1,3 +1,8 @@
+"""Bias evaluation service using RAG pipeline.
+
+This module evaluates proposals against organizational biases and criteria,
+helping identify potential conflicts or favoritism in decision-making.
+"""
 from core.pipeline import UnifiedPipeline
 from prompts.prompt_loader import load_prompt
 

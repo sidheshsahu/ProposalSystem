@@ -1,3 +1,12 @@
+"""FastAPI backend server for AI-powered Proposal Evaluation System.
+
+This module implements RESTful API endpoints for:
+- Retrieving organization information
+- Evaluating proposals with outcome predictions
+- Analyzing bias in proposals for individual members
+- Chat-based RAG interactions with proposal documents
+- Managing proposal and organizational data
+"""
 from fastapi import FastAPI, UploadFile, File, Form
 from typing import List
 from bson import ObjectId

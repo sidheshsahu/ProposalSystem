@@ -1,3 +1,11 @@
+"""Configuration management for the Proposal Evaluation System.
+
+This module defines all application configuration constants including:
+- Pinecone vector database settings
+- Embedding and LLM model specifications
+- Document processing parameters
+- Database connection details
+"""
 import os
 from dotenv import load_dotenv
 

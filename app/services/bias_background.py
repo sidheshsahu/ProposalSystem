@@ -1,3 +1,9 @@
+"""Background task for processing member-specific bias evaluations.
+
+This module handles asynchronous generation of bias-aware proposal summaries
+for each organization member, enabling personalized evaluation that accounts
+for individual biases and preferences.
+"""
 from datetime import datetime, timezone
 from services.db_service import get_org_memberships, create_proposal_data
 from services.bias_service import run_bias
@@ -5,7 +11,6 @@ from bson import ObjectId
 from services.db_service import db
 import json
 import os
-
 
 async def process_member_bias(org_id: str, proposal_id: str, document_store):
     memberships = await get_org_memberships(org_id)

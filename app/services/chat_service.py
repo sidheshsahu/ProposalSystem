@@ -1,3 +1,9 @@
+"""Chat-based RAG service for interactive proposal queries.
+
+This module enables natural language conversations about proposals,
+allowing users to ask questions and receive context-aware answers based
+on the proposal document content.
+"""
 from core.pipeline import UnifiedPipeline
 from prompts.prompt_loader import load_prompt
 

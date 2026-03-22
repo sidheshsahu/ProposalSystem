@@ -1,3 +1,11 @@
+"""Unified RAG pipeline for proposal evaluation.
+
+This module implements a retrieval-augmented generation (RAG) pipeline that:
+- Retrieves relevant documents from the vector store
+- Constructs prompts with contextual information
+- Generates responses using LLMs (Groq API)
+- Supports both standard and chat-based interactions
+"""
 from haystack import Pipeline
 from haystack.components.embedders import SentenceTransformersTextEmbedder
 from haystack.components.builders import PromptBuilder

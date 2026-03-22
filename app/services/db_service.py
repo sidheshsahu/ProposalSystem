@@ -1,3 +1,11 @@
+"""Database service for MongoDB operations.
+
+This module handles all database interactions for the proposal system including:
+- Organization and membership management
+- Proposal creation and tracking
+- Voting and outcome recording
+- Chat message history persistence
+"""
 from motor.motor_asyncio import AsyncIOMotorClient
 from typing import List
 from bson import ObjectId
