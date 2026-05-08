@@ -14,6 +14,7 @@ from haystack_integrations.components.retrievers.pinecone import PineconeEmbeddi
 from haystack.utils import Secret
 from config import EMBEDDING_MODEL, LLM_MODEL
 from dotenv import load_dotenv
+from haystack_integrations.components.connectors.langfuse import LangfuseConnector
 import os
 
 load_dotenv()
@@ -42,6 +43,7 @@ class UnifiedPipeline:
             )
 
         self.pipeline = Pipeline()
+        self.pipeline.add_component("tracer",LangfuseConnector("Proposal System"))
         self.pipeline.add_component("embedder", self.embedder)
         self.pipeline.add_component("retriever", self.retriever)
         self.pipeline.add_component("prompt", self.prompt)
