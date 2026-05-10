@@ -19,7 +19,7 @@ This repository contains the AI layer of the larger DAO platform:
 The full DAO platform is intended to support:
 
 - Proposal submission for policies, funding requests, curriculum changes, governance actions, and similar organizational decisions
-- AI-assisted review using NLP, retrieval, summarization, outcome prediction, and bias-aware stakeholder analysis
+- AI-assisted review using RAG, retrieval, summarization, outcome prediction, and bias-aware stakeholder analysis
 - Secure voting with wallet-based authentication and gasless signature flows
 - Transparent and auditable governance records, with optional blockchain-backed validation
 - Flexible deployment across education, corporate, and government use cases
@@ -86,9 +86,9 @@ The full DAO platform is intended to support:
 - Haystack
 - Sentence Transformers
 - Pinecone
-- MongoDB with Motor
-- Groq API for LLM generation
-- PyMuPDF / PDF tooling
+- MongoDB
+- Groq API
+- PyMuPDF
 
 ## Repository Structure
 
