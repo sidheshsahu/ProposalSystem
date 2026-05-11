@@ -8,10 +8,8 @@ def run_bias(document_store, bias_text):
     pipeline = UnifiedPipeline(document_store, prompt)
     return pipeline.run("Evaluate whether the proposal should pass or not based on the bias criteria and the provided context.", bias_text)
 
-
-
 result = run_bias(
-            document_store=get_document_store(),
+            document_store=get_document_store("sahu"),
             bias_text=f"""
             The proposal is to implement a new feature that allows users to customize their profiles with themes and backgrounds.
             """
